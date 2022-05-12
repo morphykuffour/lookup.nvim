@@ -27,11 +27,11 @@ EOF
 " only the `myluamodule` directory is specified, Neovim will look for a
 " `lua.lua` file, then an `init.lua` file in that directory. In this case, it
 " will find the `lua\myluamodule\init.lua` file.
-lua myluamodule = require("myluamodule")
+lua lookup = require("lookup")
 
 " Common convention in the Neovim plugin community is to require the module
 " and use it all at once:
-lua require'myluamodule'.setup({p1 = "value1"})
+lua require'lookup'.setup({p1 = "value1"})
 
 
 
@@ -43,7 +43,7 @@ lua global_lua_function()
 " Once the `require` statement completes, the `local_lua_function` Lua
 " function defined in `lua\myluamodule\init.lua` will be available when
 " qualified with the module name.
-lua myluamodule.local_lua_function()
+lua lookup.local_lua_function()
 
 " A Lua function can be mapped to a key. Here, Alt-Ctrl-G will echo a message.
 " This is a mapping to the function that wasn't carefully scoped in the Lua
@@ -71,7 +71,7 @@ nmap <M-C-G> :lua global_lua_function()<CR>
 "   print('Hello')
 " end, {desc = 'Say hello key mapping.', remap = false})
 "
-nmap <M-C-L> :lua myluamodule.local_lua_function()<CR>
+nmap <M-C-L> :lua lookup.local_lua_function()<CR>
 
 " A key mapping can be configured that uses the require statement directly,
 " so a module doesn't need to be defined in the local scope.
@@ -82,9 +82,9 @@ nmap <M-C-L> :lua myluamodule.local_lua_function()<CR>
 "   print('Hello')
 " end, {desc = 'Say hello key mapping.', remap = false})
 "
-nmap <M-C-L> :lua require'myluamodule'.local_lua_function()<CR>
+nmap <M-C-L> :lua require'lookup'.local_lua_function()<CR>
 
 
 " Lua code can be defined in other files, rather than just `lua.lua` or
 " `init.lua`. Here, Lua code is defined in `lua\myluamodule\definestuff.lua`.
-lua require("myluamodule.definestuff").show_stuff()
+lua require("lookup.lookup").show_stuff()

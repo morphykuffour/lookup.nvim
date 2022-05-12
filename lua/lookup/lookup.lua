@@ -1,6 +1,6 @@
 
 local function show_stuff()
-    print "nvim-example-lua-plugin.myluamodule.definestuff show_stuff: hello"
+    print "lookup.lookup.lookup show_stuff: hello"
 end
 
 -- Returning a Lua table at the end allows fine control of the symbols that

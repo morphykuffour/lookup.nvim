@@ -17,11 +17,11 @@ end
 -- normally try to follow the pattern demonstrated by `local_lua_function`. The
 -- right choice might depend on your circumstances.
 function global_lua_function()
-    print "nvim-example-lua-plugin.myluamodule.init global_lua_function: hello"
+    print "lookup.lookup.init global_lua_function: hello"
 end
 
 local function unexported_local_function()
-    print "nvim-example-lua-plugin.myluamodule.init unexported_local_function: hello"
+    print "lookup.lookup.init unexported_local_function: hello"
 end
 
 -- This function is qualified with `local`, so it's visibility is restricted to
@@ -29,7 +29,7 @@ end
 -- Lua pattern that allows symbols to be selectively exported from a module by
 -- adding them to a table that is returned from the file.
 local function local_lua_function()
-    print "nvim-example-lua-plugin.myluamodule.init local_lua_function: hello"
+    print "lookup.lookup.init local_lua_function: hello"
 end
 
 -- Create a command, ':DoTheThing'

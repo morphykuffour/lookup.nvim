@@ -1,6 +1,14 @@
 
-local function show_stuff()
-    print "lookup.lookup.lookup show_stuff: hello"
+local curl = require "plenary.curl"
+
+local function display()
+  print "yes"
+end
+
+local function lookup()
+    -- print "lookup.lookup.lookup show_stuff: hello"
+    local word = vim.api.expand("<cword>")
+    print(word)
 end
 
 -- Returning a Lua table at the end allows fine control of the symbols that
@@ -13,5 +21,5 @@ end
 --    local definestuff = require('myluamodule/definestuff')
 --    definestuff.show_stuff()
 return {
-    show_stuff = show_stuff,
+    lookup = lookup,
 }

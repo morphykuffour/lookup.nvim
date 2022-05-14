@@ -10,10 +10,13 @@ Lookup a word under cursor in command mode or visually highlighted word.
 Plug 'morphykuffour/lookup'
 ```
 
-After running `:PlugInstall`, the files should appear in your `~/.config/nvim/plugged` directory (or whatever path you have configured for plugins).
+After running `:PlugInstall`, the files should appear in your `~/.config/nvim/plugged` directory (or your configured path for plugins.
 
 ### packer
 
 ```lua
-use 'morphykuffour/lookup'
+use {
+  'morphykuffour/lookup.nvim',
+  requires = { 'nvim-lua/plenary.nvim' },
+}
 ```

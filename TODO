@@ -1,2 +1,4 @@
 https://stackoverflow.com/questions/1115447/how-can-i-get-the-word-under-the-cursor-and-the-text-of-the-current-line-in-vim
+curl  https://www.dictionaryapi.com/api/v3/references/collegiate/json/voluminous?key=b5a0e125-18fa-46cf-9222-313629c38588
+https://github.com/jacobsimpson/nvim-example-lua-plugin
 

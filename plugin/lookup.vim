@@ -87,4 +87,4 @@ nmap <M-C-L> :lua require'lookup'.local_lua_function()<CR>
 
 " Lua code can be defined in other files, rather than just `lua.lua` or
 " `init.lua`. Here, Lua code is defined in `lua\myluamodule\definestuff.lua`.
-lua require("lookup.lookup").show_stuff()
+lua require("lookup.lookup").lookup()

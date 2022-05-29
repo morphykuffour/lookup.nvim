@@ -7,6 +7,7 @@ set cpo&vim
 command! Lookup lua require'lookup'.lookup_word()
 command! ShowStuff lua require'lookup'.show_stuff()
 command! GetCurrentWord call Get_current_word()
+command! Mathtest lua require'lookup'.get_math_source()
 
 let &cpo = s:save_cpo
 unlet s:save_cpo

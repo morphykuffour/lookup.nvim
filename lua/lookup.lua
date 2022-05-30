@@ -1,37 +1,13 @@
+local json = require("json.json")
 local status_ok, curl = pcall(require, "plenary.curl")
 if not status_ok then
 	return
 end
 
-local json = require("json.json")
-
 local M = {}
 
--- file_exists checks if the provided file exists and returns a boolean
-local file_exists = function(file)
-	file = io.open(file, "rb")
-	if file then
-		file:close()
-	end
-	return file ~= nil
-end
-
--- get all lines from a file, returns an empty
--- list/table if the file does not exist
-function lines_from(file)
-	if not file_exists(file) then
-		return {}
-	end
-	local lines = {}
-	for line in io.lines(file) do
-		lines[#lines + 1] = line
-	end
-	return lines
-end
-
-
 -- debugging purposes
-local function dump(o)
+function dump(o)
 	if type(o) == "table" then
 		local s = "{ "
 		for k, v in pairs(o) do

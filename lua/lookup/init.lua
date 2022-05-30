@@ -43,12 +43,12 @@ M.lookup_word = function()
 		output = "/tmp/word_def",
 	})
 
-	local res_output = utils.readAll("/tmp/word_def") -- print(res_output)
+	local res_output = readAll("/tmp/word_def") -- print(res_output)
 	-- remove [ ]  from begining and end TODO: try lseek version
 	local word_def = res_output:sub(2, -2)
 
 	local word_table = json.parse(word_def) -- word_table is a nested lua table
-	print(utils.dump(word_table["meanings"]))
+	print(dump(word_table["meanings"]))
 end
 
 return M

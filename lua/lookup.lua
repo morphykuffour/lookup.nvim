@@ -29,18 +29,6 @@ function lines_from(file)
 	return lines
 end
 
--- read_file Reads all lines from a file and returns the content as a table
--- returns empty table if file does not exist
-local read_file = function(file)
-	-- if not file_exists(file) then
-	-- 	return {}
-	-- end
-	local lines = {}
-	for line in io.lines(file) do
-		lines[#lines + 1] = line
-	end
-	return lines
-end
 
 -- debugging purposes
 local function dump(o)

@@ -1,9 +1,12 @@
-local json = require("lookup.json")
 local status_ok, curl = pcall(require, "plenary.curl")
 if not status_ok then
 	return
 end
--- source: https://gist.github.com/tylerneylon/59f4bcf316be525b30ab
+
+-- define() { curl -s "dict://dict.org/d:$1" | grep -v '^[0-9]'; }
+-- json library source: https://gist.github.com/tylerneylon/59f4bcf316be525b30ab
+local json = require("lookup.json")
+
 local M = {}
 
 function dump(o)

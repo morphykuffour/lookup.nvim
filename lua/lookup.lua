@@ -1,3 +1,11 @@
+-- json library source: https://gist.github.com/tylerneylon/59f4bcf316be525b30ab
+local json = require("json")
+
+local status_ok, curl = pcall(require, "plenary.curl")
+if not status_ok then
+	return
+end
+
 local api = vim.api
 local buf, win
 local position = 0
@@ -59,6 +67,32 @@ local function open_window()
 	api.nvim_buf_add_highlight(buf, -1, "WhidHeader", 0, 0, -1)
 end
 
+function readAll(file)
+	local f = assert(io.open(file, "rb"))
+	local content = f:read("*all")
+	f:close()
+	return content
+end
+
+local function lookupword(word)
+	local req_url = "https://api.dictionaryapi.dev/api/v2/entries/en/" .. word
+
+	local res = curl.request({
+		url = req_url,
+		method = "get",
+		accept = "application/json",
+		-- word_def => json
+		output = "/tmp/word_def",
+	})
+
+	local res_output = readAll("/tmp/word_def") -- print(res_output)
+	-- remove [ ]  from begining and end TODO: try lseek version
+	local word_def = res_output:sub(2, -2)
+
+	local word_table = json.parse(word_def) -- word_table is a nested lua table
+	return word_table
+end
+
 local function update_view(direction)
 	vim.api.nvim_buf_set_option(buf, "modifiable", true)
 	position = position + direction
@@ -66,24 +100,30 @@ local function update_view(direction)
 		position = 0
 	end
 
-	local word = vim.api.nvim_call_function("expand", {
-		"<cword>",
-	})
+	-- local word = vim.api.nvim_call_function("expand", {
+	-- 	"<cword>",
+	-- })
+	local word = vim.fn.expand("<cword>")
+  print(word)
 
-	local result = vim.api.nvim_call_function("systemlist", {
-		-- 'git diff-tree --no-commit-id --name-only -r HEAD~'..position
-		' curl -s "dict://dict.org/d:' .. word .. "\" | grep -v '^[0-9]'; ",
-	})
-	-- define() { curl -s "dict://dict.org/d:$1" | grep -v '^[0-9]'; }
+	api.nvim_buf_set_lines(buf, 0, -1, false, { center("Definition of " .. word), "", "" })
 
+	-- local result = vim.api.nvim_call_function("systemlist", {
+	-- 	-- 'git diff-tree --no-commit-id --name-only -r HEAD~'..position
+	-- 	' curl -s "dict://dict.org/d:' .. word .. "\" | grep -v '^[0-9]'; ",
+	-- })
+	-- -- define() { curl -s "dict://dict.org/d:$1" | grep -v '^[0-9]'; }
+	local result = lookupword(word)
+
+	-- if definition table is empty
 	if #result == 0 then
 		table.insert(result, "")
 	end
-	for k, v in pairs(result) do
-		result[k] = "  " .. result[k]
-	end
 
-	api.nvim_buf_set_lines(buf, 1, 2, false, { center("HEAD~" .. position) })
+	-- for k, v in pairs(result) do
+	-- 	result[k] = "  " .. result[k]
+	-- end
+
 	api.nvim_buf_set_lines(buf, 3, -1, false, result)
 
 	api.nvim_buf_add_highlight(buf, -1, "whidSubHeader", 1, 0, -1)
@@ -117,7 +157,7 @@ local function set_mappings()
 	}
 
 	for k, v in pairs(mappings) do
-		api.nvim_buf_set_keymap(buf, "n", k, ':lua require"whid".' .. v .. "<cr>", {
+		api.nvim_buf_set_keymap(buf, "n", k, ':lua require"lookup".' .. v .. "<cr>", {
 			nowait = true,
 			noremap = true,
 			silent = true,

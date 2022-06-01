@@ -1,6 +1,6 @@
 # lookup
 
-Lookup a word under cursor in command mode or visually highlighted word.
+**Work in Progress** Lookup a word under cursor in command mode or visually highlighted word.
 
 ## Installation
 

@@ -8,7 +8,6 @@ if exists('g:loaded_lookup') | finish | endif
 
 
 command! Lookup lua require'lookup'.lookup()
-command! Whid lua require'whid'.whid()
 
 let s:save_cpo = &cpo
 set cpo&vim

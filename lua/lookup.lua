@@ -10,6 +10,13 @@ local api = vim.api
 local buf, win
 local position = 0
 
+local function readAll(file)
+	local f = assert(io.open(file, "rb"))
+	local content = f:read("*all")
+	f:close()
+	return content
+end
+
 local function center(str)
 	local width = api.nvim_win_get_width(0)
 	local shift = math.floor(width / 2) - math.floor(string.len(str) / 2)
@@ -67,13 +74,6 @@ local function open_window()
 	api.nvim_buf_add_highlight(buf, -1, "WhidHeader", 0, 0, -1)
 end
 
-function readAll(file)
-	local f = assert(io.open(file, "rb"))
-	local content = f:read("*all")
-	f:close()
-	return content
-end
-
 local function lookupword(word)
 	local req_url = "https://api.dictionaryapi.dev/api/v2/entries/en/" .. word
 
@@ -104,8 +104,9 @@ local function update_view(direction)
 	-- 	"<cword>",
 	-- })
 	local word = vim.fn.expand("<cword>")
-  print(word)
+	print(word)
 
+  -- TODO review
 	api.nvim_buf_set_lines(buf, 0, -1, false, { center("Definition of " .. word), "", "" })
 
 	-- local result = vim.api.nvim_call_function("systemlist", {

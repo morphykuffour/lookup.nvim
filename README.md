@@ -1,7 +1,5 @@
 # lookup
 
-**Work in Progress** Lookup a word under cursor in command mode or visually highlighted word.
-
 ## Installation
 
 ### vim-plug
@@ -19,4 +17,16 @@ use {
   'morphykuffour/lookup.nvim',
   requires = { 'nvim-lua/plenary.nvim' },
 }
+```
+
+### Usage
+Move your cursor over a word and type `:Lookup` to lookup the word.
+```
+:Lookup
+```
+
+### keybindings
+
+```lua
+vim.api.nvim_set_keymap('n', '<leader>l', ':Lookup<CR>', { noremap = true, silent = true })
 ```

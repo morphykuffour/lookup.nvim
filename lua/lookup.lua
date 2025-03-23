@@ -76,56 +76,103 @@ end
 
 local function lookupword(word)
 	local req_url = "https://api.dictionaryapi.dev/api/v2/entries/en/" .. word
-
+	
 	local res = curl.request({
 		url = req_url,
 		method = "get",
 		accept = "application/json",
-		-- word_def => json
 		output = "/tmp/word_def",
 	})
-
-	local res_output = readAll("/tmp/word_def") -- print(res_output)
-	-- remove [ ]  from begining and end TODO: try lseek version
-	local word_def = res_output:sub(2, -2)
-
-	local word_table = json.parse(word_def) -- word_table is a nested lua table
-	return word_table
+	
+	local res_output = readAll("/tmp/word_def")
+	
+	-- API returns an array of entries for successful lookups
+	-- and an error object for failed lookups
+	if res_output:sub(1, 1) == "[" then
+		-- Successful response - parse the JSON array
+		return json.parse(res_output)
+	else
+		-- Error response or unexpected format
+		return json.parse(res_output)
+	end
 end
 
-local function update_view(direction)
+local function update_view(direction, word_param)
 	vim.api.nvim_buf_set_option(buf, "modifiable", true)
 	position = position + direction
 	if position < 0 then
 		position = 0
 	end
-
-	-- local word = vim.api.nvim_call_function("expand", {
-	-- 	"<cword>",
-	-- })
-	local word = vim.fn.expand("<cword>")
-	print(word)
-
-  -- TODO review
+	
+	local word = word_param or vim.fn.expand("<cword>")
+	print("Looking up: " .. word)
+	
 	api.nvim_buf_set_lines(buf, 0, -1, false, { center("Definition of " .. word), "", "" })
+	
+	local word_data = lookupword(word)
+	local formatted_lines = {}
 
-	-- local result = vim.api.nvim_call_function("systemlist", {
-	-- 	-- 'git diff-tree --no-commit-id --name-only -r HEAD~'..position
-	-- 	' curl -s "dict://dict.org/d:' .. word .. "\" | grep -v '^[0-9]'; ",
-	-- })
-	-- -- define() { curl -s "dict://dict.org/d:$1" | grep -v '^[0-9]'; }
-	local result = lookupword(word)
-
-	-- if definition table is empty
-	if #result == 0 then
-		table.insert(result, "")
+	-- Check if we got a valid response
+	if type(word_data) == "table" then
+		-- Format the dictionary response into lines
+		if word_data.title then
+			-- Handle error response (like "No Definitions Found")
+			table.insert(formatted_lines, word_data.title)
+			if word_data.message then
+				table.insert(formatted_lines, word_data.message)
+			end
+			if word_data.resolution then
+				table.insert(formatted_lines, word_data.resolution)
+			end
+		else
+			-- Process successful response
+			for _, entry in ipairs(word_data) do
+				if entry.word then
+					table.insert(formatted_lines, "Word: " .. entry.word)
+				end
+				
+				if entry.phonetics and #entry.phonetics > 0 then
+					for _, phonetic in ipairs(entry.phonetics) do
+						if phonetic.text then
+							table.insert(formatted_lines, "Pronunciation: " .. phonetic.text)
+							break -- Just show the first pronunciation
+						end
+					end
+				end
+				
+				if entry.meanings and #entry.meanings > 0 then
+					table.insert(formatted_lines, "")
+					for i, meaning in ipairs(entry.meanings) do
+						if meaning.partOfSpeech then
+							table.insert(formatted_lines, meaning.partOfSpeech .. ":")
+						end
+						
+						if meaning.definitions and #meaning.definitions > 0 then
+							for j, def in ipairs(meaning.definitions) do
+								table.insert(formatted_lines, "  " .. j .. ". " .. def.definition)
+								if def.example then
+									table.insert(formatted_lines, "     Example: \"" .. def.example .. "\"")
+								end
+							end
+						end
+						
+						if i < #entry.meanings then
+							table.insert(formatted_lines, "")
+						end
+					end
+				end
+				
+				break -- Just process the first entry
+			end
+		end
+	end
+	
+	-- If we didn't get any lines, add an empty one
+	if #formatted_lines == 0 then
+		table.insert(formatted_lines, "No definition found for: " .. word)
 	end
 
-	-- for k, v in pairs(result) do
-	-- 	result[k] = "  " .. result[k]
-	-- end
-
-	api.nvim_buf_set_lines(buf, 3, -1, false, result)
+	api.nvim_buf_set_lines(buf, 3, -1, false, formatted_lines)
 
 	api.nvim_buf_add_highlight(buf, -1, "whidSubHeader", 1, 0, -1)
 	vim.api.nvim_buf_set_option(buf, "modifiable", false)
@@ -195,9 +242,11 @@ end
 
 local function lookup()
 	position = 0
+	local word = vim.fn.expand("<cword>")
+	-- print("Initial word lookup: " .. word)
 	open_window()
 	set_mappings()
-	update_view(0)
+	update_view(0, word)
 	api.nvim_win_set_cursor(win, { 4, 0 })
 end
 
